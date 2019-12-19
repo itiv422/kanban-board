@@ -1,9 +1,9 @@
-import { Repository, EntityRepository } from "typeorm";
-import { Task } from "./task.entity";
-import { CreateTaskDto } from "./dto/create-task.dto";
-import { TaskStatus } from "./task-status.enum";
-import { GetTasksFilterDto } from "./dto/get-tasks-filter.dto";
-import { User } from "src/auth/user.entity";
+import { Repository, EntityRepository } from 'typeorm';
+import { Task } from './task.entity';
+import { CreateTaskDto } from './dto/create-task.dto';
+import { TaskStatus } from './task-status.enum';
+import { GetTasksFilterDto } from './dto/get-tasks-filter.dto';
+import { User } from 'src/auth/user.entity';
 
 @EntityRepository(Task)
 export class TaskRepository extends Repository<Task> {
@@ -12,15 +12,11 @@ export class TaskRepository extends Repository<Task> {
         user: User
     ): Promise<Task> {
         const { title, description } = createTaskDto;
-        const task: Task = new Task();
-        task.title = title;
-        task.description = description;
-        task.status = TaskStatus.OPEN;
-        task.user = user;
+        const task: Task = new Task(title, description, TaskStatus.OPEN, user);
         await task.save();
         delete task.user;
-        
-        return task
+
+        return task;
     }
 
     async getTasks(
@@ -30,17 +26,18 @@ export class TaskRepository extends Repository<Task> {
         const { status, search } = filterDto;
         const query = this.createQueryBuilder('task');
 
-        query.where('task.userId = :userId', { userId: user.id })
+        query.where('task.userId = :userId', { userId: user.id });
 
         if (status) {
-            query.andWhere('task.status = :status', { status })
+            query.andWhere('task.status = :status', { status });
         }
-
         if (search) {
-            query.andWhere('(task.title LIKE :search OR task.description LIKE :search)', { search: `%${search}%` })
+            query.andWhere('(task.title LIKE :search OR task.description LIKE :search)', { search: `%${search}%` });
         }
 
-        return await query.getMany();
+        const tasks = await query.getMany();
+
+        return tasks;
     }
 
 }

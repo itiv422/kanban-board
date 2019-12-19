@@ -11,7 +11,7 @@ import { User } from 'src/auth/user.entity';
 export class TasksService {
     constructor(
         @InjectRepository(TaskRepository)
-        private taskRepository: TaskRepository
+        private readonly taskRepository: TaskRepository
     ) { }
 
     async getTasks(

@@ -1,12 +1,11 @@
-import { BaseEntity, Entity, PrimaryGeneratedColumn, Column, ManyToOne } from "typeorm";
-import { TaskStatus } from "./task-status.enum";
-import { User } from "src/auth/user.entity";
-
+import { BaseEntity, Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import { TaskStatus } from './task-status.enum';
+import { User } from 'src/auth/user.entity';
 
 @Entity()
 export class Task extends BaseEntity {
     @PrimaryGeneratedColumn()
-    id?: number;
+    id: number;
 
     @Column()
     title: string;
@@ -22,4 +21,12 @@ export class Task extends BaseEntity {
 
     @Column()
     userId: number;
+
+    constructor(title: string, description: string, status: TaskStatus, user: User) {
+        super();
+        this.title = title;
+        this.description = description;
+        this.status = status;
+        this.user = user;
+    }
 }

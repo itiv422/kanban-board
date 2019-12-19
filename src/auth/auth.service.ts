@@ -9,8 +9,8 @@ import { JwtPayload } from './jwt-payload.interface';
 export class AuthService {
     constructor(
         @InjectRepository(UserRepository)
-        private userRepository: UserRepository,
-        private jwtService: JwtService
+        private readonly userRepository: UserRepository,
+        private readonly jwtService: JwtService
     ) {}
 
     async signUp(authCredentialsDto: AuthCredentialsDto): Promise<void> {
@@ -20,7 +20,7 @@ export class AuthService {
     async signIn(authCredentialsDto: AuthCredentialsDto): Promise<{ accessToken: string }> {
         const username = await this.userRepository.validateUserPassword(authCredentialsDto);
 
-        if(!username) {
+        if (!username) {
             throw new UnauthorizedException('invalid credentials');
         }
 
