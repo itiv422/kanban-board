@@ -1,4 +1,4 @@
-import { jwtSecret } from './../config/jwt-secret.config';
+import { jwtSecret, expiresTime } from './../config/jwt-secret.config';
 import { Module } from '@nestjs/common';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
@@ -14,7 +14,7 @@ import { JwtStrategy } from './jwt.strategy';
     JwtModule.register({
       secret: jwtSecret,
       signOptions: {
-        expiresIn: 3600
+        expiresIn: expiresTime
       }
     }),
     TypeOrmModule.forFeature([UserRepository])

@@ -1,3 +1,5 @@
+export const expiresTime: number = 3600;
+
 export const jwtSecret: string =
 `V6vU+llkswa+HOGK6mdoe7zqnFZh7Mbm6Jqae81uPDs+E1KA9PWHUUK0QAOIk4ew
 /RPCziBtVp7gBeh72hVFxwgspG4P7QlUuGwUNVtmLeQKEJ0IuqigxlNsYpbdq2lZ
