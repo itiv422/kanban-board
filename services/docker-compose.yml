@@ -11,3 +11,8 @@ services:
       POSTGRES_USER: 'postgres'
       POSTGRES_PASSWORD: 'postgres'
       POSTGRES_DB: 'task_management'
+      
+  solrsevice:
+    build: solrservice
+    ports: 
+    - "8983:8983"

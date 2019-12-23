@@ -38,6 +38,7 @@
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.0",
     "rxjs": "^6.5.3",
+    "solr-client": "^0.7.1",
     "typeorm": "^0.2.21"
   },
   "devDependencies": {

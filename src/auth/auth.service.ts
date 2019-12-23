@@ -7,8 +7,8 @@ import { JwtPayload } from './interfaces/jwt-payload.interface';
 
 @Injectable()
 export class AuthService {
-    private logger = new Logger('AuthService');
-    
+    private readonly logger = new Logger('AuthService');
+
     constructor(
         @InjectRepository(UserRepository)
         private readonly userRepository: UserRepository,
