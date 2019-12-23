@@ -1,3 +1,4 @@
+import { SolrService } from './services/solr.service';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { GetTasksFilterDto } from './dto/get-tasks-filter.dto';
@@ -11,7 +12,8 @@ import { User } from 'src/auth/user.entity';
 export class TasksService {
     constructor(
         @InjectRepository(TaskRepository)
-        private readonly taskRepository: TaskRepository
+        private readonly taskRepository: TaskRepository,
+        private readonly solrService: SolrService
     ) { }
 
     async getTasks(
@@ -35,7 +37,17 @@ export class TasksService {
         createTaskDto: CreateTaskDto,
         user: User
     ): Promise<Task> {
-        return this.taskRepository.createTask(createTaskDto, user);
+        const task = this.taskRepository.createTask(createTaskDto, user);
+        this.solrService.addTask(
+            {
+                title: (await task).title,
+                description: (await task).description,
+                status: (await task).status,
+                username: user.username,
+                taskId: (await task).id
+            }
+        );
+        return task;
     }
 
     async updateTaskStatus(id: number, status: TaskStatus, user: User): Promise<Task> {
