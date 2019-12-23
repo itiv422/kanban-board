@@ -38,7 +38,7 @@ export class TasksService {
         user: User
     ): Promise<Task> {
         const task = this.taskRepository.createTask(createTaskDto, user);
-        this.solrService.addTask(
+        await this.solrService.addTask(
             {
                 title: (await task).title,
                 description: (await task).description,

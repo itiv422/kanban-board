@@ -8,3 +8,9 @@ db:
 
 jwt:
   expiresIn: 3600
+
+solr:
+  host: 'localhost'
+  port: 8983
+  path: '/solr'
+  core: task
