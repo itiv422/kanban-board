@@ -23,6 +23,10 @@ export class TasksService {
         return this.taskRepository.getTasks(filterDto, user);
     }
 
+    async searchTasks(query: string, user: User) {
+        return this.solrService.search(query, user.username);
+    }
+
     async getTaskById(id: number, user: User): Promise<Task> {
         const found = await this.taskRepository.findOne({ where: {id, userId: user.id} });
 
@@ -54,6 +58,7 @@ export class TasksService {
         const task = await this.getTaskById(id, user);
         task.status = status;
         await task.save();
+        this.solrService.updateTaskStatusByTaskId(task.status, id);
 
         return task;
     }
@@ -63,6 +68,6 @@ export class TasksService {
         if (!result.affected) {
             throw new NotFoundException(`Task with ID "${id}" not found`);
         }
-        this.solrService.deleteTaskbyTaskId(id);
+        this.solrService.deleteTaskByTaskId(id);
     }
 }

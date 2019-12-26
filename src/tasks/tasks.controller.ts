@@ -33,6 +33,14 @@ export class TasksController {
         return this.tasksService.getTaskById(id, user);
     }
 
+    @Get(':query')
+    searchTasks(
+        @Param('query') query: string,
+        @GetUser() user: User
+    ) {
+        return this.tasksService.searchTasks(query, user);
+    }
+
     @Post()
     @UsePipes(ValidationPipe)
     createTask(
