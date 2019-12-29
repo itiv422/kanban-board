@@ -1,4 +1,3 @@
-import { User } from './../../auth/user.entity';
 import solr = require('solr-client');
 import { Injectable, Logger } from '@nestjs/common';
 import config = require('config');
@@ -6,73 +5,59 @@ import config = require('config');
 @Injectable()
 export class SolrService {
     private readonly logger = new Logger('SolrService');
-    private readonly solrClient = solr.createClient(config.get('solr'));
 
     addTask(task: any): boolean {
         let isIndexed = true;
-        this.solrClient.add(task,
+        const solrClient = solr.createClient(config.get('solr'));
+        solrClient.add(task,
             err =>
                 {
                     if (err) {
                         isIndexed = false;
-                        this.solrClient.rollback();
+                        solrClient.rollback();
                         this.logger.error(JSON.stringify(err));
                     } else {
-                        this.solrClient.commit();
+                        solrClient.commit();
                         this.logger.log(`New task in SOLR index. Task id: ${task.taskId}`);
                     }
                 }
-            );
+        );
+
         return isIndexed;
     }
 
     deleteTaskByTaskId(taskId: number): void {
+        const solrClient = solr.createClient(config.get('solr'));
         const field = 'taskId';
-        this.solrClient.delete(field, taskId,
+        solrClient.delete(field, String(taskId),
             err =>
                 {
                     if (err) {
-                        this.solrClient.rollback();
+                        solrClient.rollback();
                         this.logger.error(JSON.stringify(err));
                     } else {
-                        this.solrClient.commit();
+                        solrClient.commit();
                         this.logger.log(`Delete task. Task id: ${taskId}`);
-                    }
-                }
-            );
-    }
-
-    updateTaskStatusByTaskId(status: string, taskId: number): void {
-        this.solrClient.atomicUpdate(
-            {
-                taskId,
-                status
-            },
-            err =>
-                {
-                    if (err) {
-                        this.solrClient.rollback();
-                        this.logger.error(JSON.stringify(err));
-                    } else {
-                        this.solrClient.commit();
-                        this.logger.log(`Update task. Task id: ${taskId}`);
                     }
                 }
         );
     }
 
-    search(query: string, userName: string) {
+    updateTaskStatusByTaskId(taskId: number, task: any): void {
+        this.deleteTaskByTaskId(taskId);
+        this.addTask(task);
+    }
+
+    search(query: string, userName: string): any {
+        const solrClient = solr.createClient(config.get('solr'));
         const highlightOptions = {
             on: true,
-            fl: 'description',
-            simplePre: '<',
-            simplePost: '>'
+            fl: 'description, title',
+            simplePre: '<b>',
+            simplePost: '</b>'
         };
-        const solrQuery = this.solrClient.createQuery()
-            .q(query)
-            .edismax()
-            .qf({title : 5 , description : 1})
-            .mm(2)
+        const solrQuery = solrClient.createQuery()
+            .q(`(title:"${query}"^10 OR description:"${query}"^1) AND username:'${userName}'`)
             .start(0)
             .rows(10)
             .hl(highlightOptions)
@@ -85,13 +70,15 @@ export class SolrService {
                 missing : false,
                 method : 'fc'
              });
-        this.solrClient.search(solrQuery,
-            err =>
+        return solrClient.search(solrQuery,
+            (err, data) =>
             {
                 if (err) {
                     this.logger.error(JSON.stringify(err));
                 }
+                console.log(data);
             }
         );
+
     }
 }

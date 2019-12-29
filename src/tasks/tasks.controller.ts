@@ -25,20 +25,20 @@ export class TasksController {
         return this.tasksService.getTasks(filterDto, user);
     }
 
-    @Get(':id')
+    @Get('/search')
+    searchTasks(
+        @Query('query') query: string,
+        @GetUser() user: User
+    ): Promise<any> {
+        return this.tasksService.searchTasks(query, user);
+    }
+
+    @Get('/:id')
     getTaskById(
         @Param('id', ParseIntPipe) id: number,
         @GetUser() user: User
     ): Promise<Task> {
         return this.tasksService.getTaskById(id, user);
-    }
-
-    @Get(':query')
-    searchTasks(
-        @Param('query') query: string,
-        @GetUser() user: User
-    ) {
-        return this.tasksService.searchTasks(query, user);
     }
 
     @Post()
@@ -60,7 +60,7 @@ export class TasksController {
         return this.tasksService.updateTaskStatus(id, status, user);
     }
 
-    @Delete(':id')
+    @Delete('/:id')
     deleteTask(
         @Param('id', ParseIntPipe) id: number,
         @GetUser() user: User

@@ -23,7 +23,7 @@ export class TasksService {
         return this.taskRepository.getTasks(filterDto, user);
     }
 
-    async searchTasks(query: string, user: User) {
+    async searchTasks(query: string, user: User): Promise<any> {
         return this.solrService.search(query, user.username);
     }
 
@@ -58,7 +58,14 @@ export class TasksService {
         const task = await this.getTaskById(id, user);
         task.status = status;
         await task.save();
-        this.solrService.updateTaskStatusByTaskId(task.status, id);
+        this.solrService.updateTaskStatusByTaskId(id,
+            {
+                title: task.title,
+                description: task.description,
+                status,
+                username: user.username,
+                taskId: task.id
+            });
 
         return task;
     }
