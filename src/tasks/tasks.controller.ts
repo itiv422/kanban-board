@@ -8,15 +8,22 @@ import { TaskStatus } from './task-status.enum';
 import { AuthGuard } from '@nestjs/passport';
 import { User } from 'src/auth/user.entity';
 import { GetUser } from 'src/auth/get-user.decorator';
+import { ApiBearerAuth, ApiTags, ApiCreatedResponse } from '@nestjs/swagger';
 
 @Controller('tasks')
 @UseGuards(AuthGuard())
+@ApiBearerAuth()
+@ApiTags('tasks')
 export class TasksController {
     private readonly logger = new Logger('TasksController');
 
     constructor(private readonly tasksService: TasksService) {}
 
     @Get()
+    @ApiCreatedResponse({
+        description: 'Get all tasks.',
+        type: [Task]
+    })
     getTasks(
         @Query(ValidationPipe) filterDto: GetTasksFilterDto,
         @GetUser() user: User
@@ -25,6 +32,9 @@ export class TasksController {
         return this.tasksService.getTasks(filterDto, user);
     }
 
+    @ApiCreatedResponse({
+        description: 'Search tasks.'
+    })
     @Get('/search')
     searchTasks(
         @Query('query') query: string,
@@ -34,6 +44,10 @@ export class TasksController {
     }
 
     @Get('/:id')
+    @ApiCreatedResponse({
+        description: 'Get task by id.',
+        type: Task
+    })
     getTaskById(
         @Param('id', ParseIntPipe) id: number,
         @GetUser() user: User
@@ -43,6 +57,10 @@ export class TasksController {
 
     @Post()
     @UsePipes(ValidationPipe)
+    @ApiCreatedResponse({
+        description: 'Create task.',
+        type: Task
+    })
     createTask(
         @Body() createTaskDto: CreateTaskDto,
         @GetUser() user: User
@@ -52,6 +70,10 @@ export class TasksController {
     }
 
     @Patch('/:id/status')
+    @ApiCreatedResponse({
+        description: 'Update task.',
+        type: Task
+    })
     updateTaskStatus(
         @Param('id', ParseIntPipe) id: number,
         @Body('status', TaskStatusValidationPipe) status: TaskStatus,
@@ -61,6 +83,10 @@ export class TasksController {
     }
 
     @Delete('/:id')
+    @ApiCreatedResponse({
+        description: 'Delete task.',
+        type: Task
+    })
     deleteTask(
         @Param('id', ParseIntPipe) id: number,
         @GetUser() user: User
