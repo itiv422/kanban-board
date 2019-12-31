@@ -9,6 +9,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { User } from 'src/auth/user.entity';
 import { GetUser } from 'src/auth/get-user.decorator';
 import { ApiBearerAuth, ApiTags, ApiCreatedResponse } from '@nestjs/swagger';
+import { SearchQueryValidationPipe } from './pipes/search-query-validation.pipe';
 
 @Controller('tasks')
 @UseGuards(AuthGuard())
@@ -17,7 +18,7 @@ import { ApiBearerAuth, ApiTags, ApiCreatedResponse } from '@nestjs/swagger';
 export class TasksController {
     private readonly logger = new Logger('TasksController');
 
-    constructor(private readonly tasksService: TasksService) {}
+    constructor(private readonly tasksService: TasksService) { }
 
     @Get()
     @ApiCreatedResponse({
@@ -37,7 +38,7 @@ export class TasksController {
     })
     @Get('/search')
     searchTasks(
-        @Query('query') query: string,
+        @Query('query', SearchQueryValidationPipe) query: string,
         @GetUser() user: User
     ): Promise<any> {
         return this.tasksService.searchTasks(query, user);

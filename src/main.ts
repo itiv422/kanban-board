@@ -12,7 +12,6 @@ async function bootstrap() {
     .setTitle('Todo example')
     .setDescription('The simple todo application')
     .setVersion('1.0')
-    .addTag('todo')
     .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, options);

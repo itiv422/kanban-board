@@ -14,4 +14,4 @@ import { SolrService } from './services/solr.service';
   controllers: [TasksController],
   providers: [TasksService, SolrService]
 })
-export class TasksModule {}
+export class TasksModule { }

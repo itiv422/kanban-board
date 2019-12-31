@@ -8,7 +8,7 @@ import { Logger, InternalServerErrorException } from '@nestjs/common';
 
 @EntityRepository(Task)
 export class TaskRepository extends Repository<Task> {
-    private logger = new Logger('TaskRepository');
+    private readonly logger = new Logger('TaskRepository');
 
     async createTask(
         createTaskDto: CreateTaskDto,
@@ -17,12 +17,12 @@ export class TaskRepository extends Repository<Task> {
         const { title, description } = createTaskDto;
         const task: Task = new Task(title, description, TaskStatus.OPEN, user);
         try {
-        await task.save();
+            await task.save();
         } catch (error) {
             this.logger.error(`Failed to create a task for user "${user.username}", Data: ${JSON.stringify(createTaskDto)}`, error.stack);
             throw new InternalServerErrorException();
         }
-        
+
         delete task.user;
         return task;
     }

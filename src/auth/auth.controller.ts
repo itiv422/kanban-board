@@ -8,7 +8,7 @@ import { ApiBody, ApiTags, ApiCreatedResponse } from '@nestjs/swagger';
 export class AuthController {
     constructor(
         private readonly authService: AuthService
-    ) {}
+    ) { }
 
     @Post('/signup')
     @ApiCreatedResponse({

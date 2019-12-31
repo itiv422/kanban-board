@@ -10,17 +10,16 @@ export class SolrService {
         let isIndexed = true;
         const solrClient = solr.createClient(config.get('solr'));
         solrClient.add(task,
-            err =>
-                {
-                    if (err) {
-                        isIndexed = false;
-                        solrClient.rollback();
-                        this.logger.error(JSON.stringify(err));
-                    } else {
-                        solrClient.commit();
-                        this.logger.log(`New task in SOLR index. Task id: ${task.taskId}`);
-                    }
+            err => {
+                if (err) {
+                    isIndexed = false;
+                    solrClient.rollback();
+                    this.logger.error(JSON.stringify(err));
+                } else {
+                    solrClient.commit();
+                    this.logger.log(`New task in SOLR index. Task id: ${task.taskId}`);
                 }
+            }
         );
 
         return isIndexed;
@@ -30,16 +29,15 @@ export class SolrService {
         const solrClient = solr.createClient(config.get('solr'));
         const field = 'taskId';
         solrClient.delete(field, String(taskId),
-            err =>
-                {
-                    if (err) {
-                        solrClient.rollback();
-                        this.logger.error(JSON.stringify(err));
-                    } else {
-                        solrClient.commit();
-                        this.logger.log(`Delete task. Task id: ${taskId}`);
-                    }
+            err => {
+                if (err) {
+                    solrClient.rollback();
+                    this.logger.error(JSON.stringify(err));
+                } else {
+                    solrClient.commit();
+                    this.logger.log(`Delete task. Task id: ${taskId}`);
                 }
+            }
         );
     }
 
@@ -48,7 +46,7 @@ export class SolrService {
         this.addTask(task);
     }
 
-    search(query: string, userName: string): any {
+    async search(query: string, userName: string) {
         const solrClient = solr.createClient(config.get('solr'));
         const highlightOptions = {
             on: true,
@@ -57,28 +55,30 @@ export class SolrService {
             simplePost: '</b>'
         };
         const solrQuery = solrClient.createQuery()
-            .q(`(title:"${query}"^10 OR description:"${query}"^1) AND username:'${userName}'`)
+            .q(`(title:"${query}"^10 OR description:"${query}"^1) AND username:"${userName}"`)
             .start(0)
             .rows(10)
             .hl(highlightOptions)
             .facet({
-                field : 'status',
-                limit : 10,
-                offset : 0,
-                sort : 'count',
-                mincount : 0,
-                missing : false,
-                method : 'fc'
-             });
-        return solrClient.search(solrQuery,
-            (err, data) =>
-            {
-                if (err) {
-                    this.logger.error(JSON.stringify(err));
+                field: 'status',
+                limit: 10,
+                offset: 0,
+                sort: 'count',
+                mincount: 0,
+                missing: false,
+                method: 'fc'
+            });
+        const result = new Promise(resolve => {
+            solrClient.search(solrQuery,
+                (err, data) => {
+                    if (err) {
+                        this.logger.error(JSON.stringify(err));
+                    } else {
+                        resolve(data);
+                    }
                 }
-                console.log(data);
-            }
-        );
-
+            );
+        });
+        return result;
     }
 }
