@@ -3,16 +3,27 @@ version: '3'
 services:
   postgres:
     image: postgres:alpine
-    volumes:
-      - /var/lib/postgresql/data
+    # volumes:
+    #   - ./postgres_data:/var/lib/postgresql/data
     ports:
-      - "5432:5432"
+      - 5432:5432
     environment:
       POSTGRES_USER: 'postgres'
       POSTGRES_PASSWORD: 'postgres'
       POSTGRES_DB: 'task_management'
-      
+
+  front:
+    image: nginx:alpine
+    ports:
+      - 8080:80
+    volumes:
+      - ./webapp_data/static:/static
+      - ./webapp_data/config/nginx.conf:/etc/nginx/nginx.conf
+
   solrsevice:
-    build: solrservice
+    image: solr:latest
     ports: 
-    - "8983:8983"
+      - 8983:8983
+    volumes:
+      - ./solr_data:/solrhome
+    command: solr start -f -s /solrhome -t /solrhome/solrindex
