@@ -1,4 +1,4 @@
-# Simple job management application
+# Simple job management application(work in progress)
 
 ## Project setup
 ### Before starting the application, you must compile the subprojects in the folders:
