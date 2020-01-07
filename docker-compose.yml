@@ -1,0 +1,75 @@
+version: '3'
+
+services:
+  front: # work in progress
+    image: nginx:1-alpine
+    volumes:
+      - ./webapp_data/static/dist:/static
+      - ./webapp_data/config/nginx.conf:/etc/nginx/nginx.conf
+    ports:
+      - 8080:80
+    networks:
+      - app-network
+    depends_on:
+      - backend
+
+  backend: # work in progress
+    image: node:12-alpine
+    ports:
+      - 3000:3000
+    networks:
+      - app-network
+    depends_on:
+      - postgres
+      - mongo
+      - redis
+      - solrsevice
+
+  postgres:
+    image: postgres:12-alpine
+    environment:
+      POSTGRES_USER: 'postgres'
+      POSTGRES_PASSWORD: 'postgres'
+      POSTGRES_DB: 'task_management'
+    # volumes:
+      # - ./postgres_data:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    networks:
+      - app-network
+
+  mongo:
+    image: mongo:4-bionic
+    environment:
+      MONGO_INITDB_DATABASE: 'phone-book'
+      MONGO_INITDB_ROOT_USERNAME: 'mongo'
+      MONGO_INITDB_ROOT_PASSWORD: 'mongo'
+      MONGO_LOG_DIR: /dev/null
+    volumes:
+    # - ./mongo_data:/data/db
+      - ./mongo_data/config/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+    ports:
+      - 27017:27017
+    networks:
+      - app-network
+
+  redis:
+    image: redis:5-alpine
+    ports:
+      - 6379:6379
+    networks:
+      - app-network
+
+  solrsevice:
+    image: solr:8
+    command: solr start -f -s /solrhome -t /solrhome/solrindex
+    volumes:
+      - ./solr_data:/solrhome
+    ports: 
+      - 8983:8983
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
