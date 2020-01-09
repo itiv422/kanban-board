@@ -24,7 +24,7 @@ export class TasksService {
     }
 
     async searchTasks(query: string, user: User): Promise<any> {
-        return this.solrService.search(query, user.username);
+        return this.solrService.search(query, user.userName);
     }
 
     async getTaskById(id: number, user: User): Promise<Task> {
@@ -47,7 +47,7 @@ export class TasksService {
                 title: task.title,
                 description: task.description,
                 status: task.status,
-                username: user.username,
+                username: user.userName,
                 taskId: task.id
             }
         );
@@ -63,7 +63,7 @@ export class TasksService {
                 title: task.title,
                 description: task.description,
                 status,
-                username: user.username,
+                username: user.userName,
                 taskId: task.id
             });
 

@@ -10,20 +10,18 @@ services:
       - 8080:80
     networks:
       - app-network
-    depends_on:
-      - backend
 
-  backend: # work in progress
-    image: node:12-alpine
-    ports:
-      - 3000:3000
-    networks:
-      - app-network
-    depends_on:
-      - postgres
-      - mongo
-      - redis
-      - solrsevice
+  # backend: # work in progress
+  #   image: node:12-alpine
+  #   ports:
+  #     - 3000:3000
+  #   networks:
+  #     - app-network
+  #   depends_on:
+  #     - postgres
+  #     - mongo
+  #     - redis
+  #     - solrsevice
 
   postgres:
     image: postgres:12-alpine

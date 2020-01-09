@@ -8,14 +8,23 @@ import { CreatePhoneBookDto } from './dto/create-phone-book.dto';
 export class PhoneBookService {
   constructor(@InjectModel('PhoneBook') private readonly phoneBookModel: Model<PhoneBook>) {}
 
-  async create(createPhoneBookDto: CreatePhoneBookDto): Promise<PhoneBook> {
-    const createdCat = new this.phoneBookModel(createPhoneBookDto);
-    const response = await createdCat.save();
-    return response;
+  async update(createPhoneBookDto: CreatePhoneBookDto, userName: string): Promise<PhoneBook> {
+    const options = { upsert: true, new: true, setDefaultsOnInsert: true };
+    const phoneBookNodes =  (await this.phoneBookModel.updateOne(
+      {
+        userName
+      },
+      {
+        userName,
+        phoneBook: createPhoneBookDto
+      }, options)).phoneBook;
+
+    return phoneBookNodes;
   }
 
-  async findAll(): Promise<PhoneBook[]> {
-    const result = await this.phoneBookModel.find().exec();
+  async findAll(userName: string) {
+    const result = (await this.phoneBookModel.findOne({ userName }).exec());
+
     return result;
   }
 }

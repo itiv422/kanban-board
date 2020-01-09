@@ -20,13 +20,13 @@ export class AuthService {
     }
 
     async signIn(authCredentialsDto: AuthCredentialsDto): Promise<{ accessToken: string }> {
-        const username = await this.userRepository.validateUserPassword(authCredentialsDto);
+        const userName = await this.userRepository.validateUserPassword(authCredentialsDto);
 
-        if (!username) {
+        if (!userName) {
             throw new UnauthorizedException('invalid credentials');
         }
 
-        const payload: JwtPayload = { username };
+        const payload: JwtPayload = { userName };
         const accessToken = this.jwtService.sign(payload, { algorithm: 'HS512' });
         this.logger.error(`Generated JWT Token with payload ${JSON.stringify(payload)}`);
 

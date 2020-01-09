@@ -3,14 +3,14 @@ import { Task } from 'src/tasks/task.entity';
 import bcryptjs = require('bcryptjs');
 
 @Entity()
-@Unique(['username'])
+@Unique(['userName'])
 export class User extends BaseEntity {
 
     @PrimaryGeneratedColumn()
     id: number;
 
     @Column()
-    username: string;
+    userName: string;
 
     @Column()
     password: string;
@@ -21,9 +21,9 @@ export class User extends BaseEntity {
     @OneToMany(type => Task, task => task.user, { eager: true })
     tasks: Task[];
 
-    constructor(username: string, password: string, salt: string) {
+    constructor(userName: string, password: string, salt: string) {
         super();
-        this.username = username;
+        this.userName = userName;
         this.password = password;
         this.salt = salt;
     }

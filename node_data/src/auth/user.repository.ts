@@ -9,9 +9,9 @@ const DUPLICATE_USERNAME_DBERROR = '23505';
 @EntityRepository(User)
 export class UserRepository extends Repository<User> {
     async signUp(authCredentialsDto: AuthCredentialsDto): Promise<void> {
-        const { username, password } = authCredentialsDto;
+        const { userName, password } = authCredentialsDto;
         const salt = await bcryptjs.genSalt();
-        const user = new User(username, await this.hashPassword(password, salt), salt);
+        const user = new User(userName, await this.hashPassword(password, salt), salt);
         try {
             await user.save();
         } catch (error) {
@@ -24,10 +24,10 @@ export class UserRepository extends Repository<User> {
     }
 
     async validateUserPassword(authCredentialsDto: AuthCredentialsDto): Promise<string> {
-        const { username, password } = authCredentialsDto;
-        const user = await this.findOne({ username });
+        const { userName, password } = authCredentialsDto;
+        const user = await this.findOne({ userName });
         if (user && await user.validatePassword(password)) {
-            return user.username;
+            return user.userName;
         } else {
             return null;
         }

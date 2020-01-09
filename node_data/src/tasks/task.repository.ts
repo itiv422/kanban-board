@@ -19,7 +19,7 @@ export class TaskRepository extends Repository<Task> {
         try {
             await task.save();
         } catch (error) {
-            this.logger.error(`Failed to create a task for user "${user.username}", Data: ${JSON.stringify(createTaskDto)}`, error.stack);
+            this.logger.error(`Failed to create a task for user "${user.userName}", Data: ${JSON.stringify(createTaskDto)}`, error.stack);
             throw new InternalServerErrorException();
         }
 
@@ -47,7 +47,7 @@ export class TaskRepository extends Repository<Task> {
             const tasks = await query.getMany();
             return tasks;
         } catch (error) {
-            this.logger.error(`Failed to get tasks for user "${user.username}", Filters: ${JSON.stringify(filterDto)}`, error.stack);
+            this.logger.error(`Failed to get tasks for user "${user.userName}", Filters: ${JSON.stringify(filterDto)}`, error.stack);
             throw new InternalServerErrorException();
         }
     }
