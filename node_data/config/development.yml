@@ -9,3 +9,6 @@ jwt:
 
 mongo:
   url: 'mongodb://admin:admin@localhost:27017/phone-book'
+
+redis:
+  host: 'localhost'
